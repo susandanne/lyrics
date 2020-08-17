@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Hard Rock Solution - Song Lyric App</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Custom css -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <nav class="navbar  navbar-dark my-3">
+            <a class="navbar-brand" href="#">
+                <img src="images/logo.png" alt="Hard Rock Solution">
+            </a>
+       
+        </nav>
+
+        <main class="content-area">
+            <div class="search-bar col-md-6 mx-auto">
+                <h1 class="text-center">Lyrics Search</h1>
+                <div class="search-box my-5">
+                    <form id="form">
+                        <input id="search" type="text" class="form-control" placeholder="Enter your artist song name">
+                        <button id="search-btn" class="btn btn-success search-btn">Search</button>
+                    </form>
+                </div>
+            </div>
+            <!-- === Simple results === -->
+            
+            <div class="d-flex justify-content-center">
+                <div class="song-result" id="result">
+                    <p class="text-center">your  favourite  lyrics</p>
+                    
+
+                </div>
+            </div>
+
+
+
+
+ 
+
+
+        </main>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- Custom Script Here -->
+
+    <script>
+ 
+const search = document.getElementById('search'); 
+const result = document.getElementById('result'); 
+
+
+
+form.addEventListener('submit', function(e) {
+   e.preventDefault(); 
+   const searchitem = search.value ; 
+   
+   if(searchitem == ''|| searchitem == null){
+      alert (" Plaeas write a song name ")
+   }
+   else{
+      searchs(searchitem); 
+   }
+
+})
+
+async function searchs(task) {
+   const res = await fetch(`https://api.lyrics.ovh/suggest/${task}&limit=10`);
+    const data = await res.json();
+  
+    showData(data);
+
+
+ }
+
+
+
+function showData(data){
+
+   let output = '';
+   data.data.forEach(song => {
+      output += ` 
+      
+      <li> 
+         <span><strong> ${song.title} </strong> Album by  ${song.artist.name} </span>
+         <button class="btn btn-success" data-artist= "${song.artist.name}" data-songtitle = "${song.title}">Get Lyrics</button>
+      </li>
+      `;
+   });
+   
+   result.innerHTML = `
+   <ul class="songs">
+      ${output}
+   </ul>
+   `;
+   
+}
+
+
+async function lyrics(songTitle, artist){
+
+   const res = await fetch(`https://api.lyrics.ovh/v1/${artist}/${songTitle}`);
+   const data = await res.json();
+
+  const lyrics = data.lyrics;
+  result.innerHTML = `<h2> ${songTitle} ${artist} </h2>
+  <span> <pre> ${lyrics} </pre> </span>`
+}
+
+
+
+result.addEventListener ("click", function(e){
+
+   const buttonPress = e.target;
+
+   if (buttonPress.tagName == "BUTTON" ){
+
+      const songTitle =  buttonPress.getAttribute ('data-songtitle');
+      const artist =  buttonPress.getAttribute ('data-artist');
+
+      lyrics(songTitle, artist);
+   }
+})
+
+
+
+
+    </script>
+</body>
+
+</html>
